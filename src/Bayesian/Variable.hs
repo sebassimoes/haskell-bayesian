@@ -3,37 +3,66 @@ module Bayesian.Variable(
   Variable,
   VariableSet,
   VariableInstantiation,
+  VariableInstantiationSet,
   createVariable,
-  instantiateVariable
+  instantiateVariable,
+  instantiatedVariable,
+  instantiation,
+  variableSize,
+  variableSetSize,
+  variableInstantiations
 ) where
 
 import qualified Data.Set
+import Data.List
+import Bayesian.CheckedError
 
 -- | Synonym for a set of Strings.
-type Domain = Data.Set.Set String
+type Domain = [String]
 -- | Synonym for a set of Variables.
-type VariableSet = Data.Set.Set Variable
+type VariableSet = [Variable]
+-- | Synonym for a set of Variables Instantiations.
+type VariableInstantiationSet = [VariableInstantiation]
 
 -- | Discrete variable on a network.
 data Variable = V {
-  label :: String,
-  domain :: Domain
-} deriving (Show, Eq, Ord)
+  variableLabel :: String,
+  variableDomain :: Domain
+} deriving (Eq, Ord)
+
+instance Show Variable where
+  show = variableLabel
 
 -- | Instantiated variable.
 data VariableInstantiation = I {
-  var :: Variable,
-  value :: String
-} deriving Show
+  instantiatedVariable :: Variable,
+  instantiation :: String
+} deriving (Eq, Ord)
+
+instance Show VariableInstantiation where
+  show vi =
+    show (instantiatedVariable vi) ++ "=" ++ instantiation vi
 
 -- | Creates a variable, given its label and domain values.
 createVariable :: String -> Domain -> Variable
-createVariable = V
+createVariable label domain = V label (nub domain)
 
 -- | Creates a variable instantiantion, given the variable and the corresponding value.
-instantiateVariable :: String -> Variable -> Either String VariableInstantiation
+instantiateVariable :: String -> Variable -> Checked VariableInstantiation
 instantiateVariable value variable =
-  if Data.Set.member value $ domain variable then
+  if value `elem` variableDomain variable then
     Right $ I variable value
   else
-    Left $ "Value " ++ value ++ " is not valid for the variable " ++ show variable
+    Left InvalidVariableInstantiation
+
+-- | Get the set of valid instantiations for a given variable.
+variableInstantiations :: Variable -> VariableInstantiationSet
+variableInstantiations v = map (I v) $ variableDomain v
+
+-- | Gets the variable domain size (the number of valid instantiations)
+variableSize :: Variable -> Int
+variableSize = length.variableDomain
+
+-- | Gets the size of a variable set, which is the product of all variables sizes.
+variableSetSize :: VariableSet -> Int
+variableSetSize = foldr ((*) .variableSize) 1
