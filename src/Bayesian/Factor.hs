@@ -1,6 +1,8 @@
 module Bayesian.Factor(
   Factor,
   factorVars,
+  factorValues,
+  createFactorValue,
   buildFactor,
   buildFactorValue,
   buildFactorValueFromInstantiation,
@@ -19,7 +21,7 @@ data Factor = MFactor {
   factorLabel :: String,
   factorVars :: VariableSet,
   factorValues :: [FactorValue]
-}
+} deriving Eq
 
 instance Show Factor where
   show f = "Factor(" ++ factorLabel f ++ "): " ++ show (factorValues f)
@@ -28,7 +30,7 @@ instance Show Factor where
 data FactorValue = MFv {
   variablesInstantiation :: VariableInstantiationSet,
   value :: Double
-}
+} deriving Eq
 
 instance Show FactorValue where
   show fv = showVariablesInstantiation (variablesInstantiation fv) ++ " := " ++ show (value fv)
@@ -45,7 +47,7 @@ createFactorValue = MFv
 -- | Builds a factor over a set of variables.
 buildFactor :: String -> VariableSet -> FactorState () -> Checked Factor
 buildFactor label vars fstate =
-  let initialState = MFactor label vars []
+  let initialState = MFactor label (nub vars) []
       factorStateResult = runExceptT fstate
       (value, state) = runState factorStateResult initialState
   in either Left (\_ -> buildFactor' state) value
