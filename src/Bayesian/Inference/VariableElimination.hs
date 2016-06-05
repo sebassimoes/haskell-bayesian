@@ -2,10 +2,14 @@ module Bayesian.Inference.VariableElimination(
   vePr1
 ) where
 
+import Bayesian.BayesianNetwork
 import Bayesian.Factor
 import Bayesian.Variable
 import Bayesian.CheckedError
 import Data.List
+
+--vePr1Inference :: BayesianNetwork -> VariableInstantiationSet ->
+--vePr1Inference
 
 vePr1 :: [Variable] -> [Factor] -> Factor
 vePr1 eliminationOrder =

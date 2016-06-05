@@ -8,12 +8,13 @@ module Bayesian.Variable(
   instantiateVariable,
   instantiatedVariable,
   instantiation,
+  variableLabel,
   variableSize,
   variableSetSize,
-  variableInstantiations
+  variableInstantiations,
+  variableSetAllInstantiations
 ) where
 
-import qualified Data.Set
 import Data.List
 import Bayesian.CheckedError
 
@@ -66,3 +67,6 @@ variableSize = length.variableDomain
 -- | Gets the size of a variable set, which is the product of all variables sizes.
 variableSetSize :: VariableSet -> Int
 variableSetSize = foldr ((*) .variableSize) 1
+
+variableSetAllInstantiations :: [Variable] -> [Domain]
+variableSetAllInstantiations = mapM variableDomain

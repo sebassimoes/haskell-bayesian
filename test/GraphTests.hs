@@ -1,12 +1,15 @@
 import qualified Data.Graph
 import Data.Graph.Inductive.Graph
 import Data.Graph.Inductive.PatriciaTree
+import Data.List
+import Bayesian.BayesianNetwork
 
 main :: IO ()
 main = do
+  --print $ mapM id [["1", "2"], ["true", "false"], ["A", "B", "C", "D"], ["0", "1", "2", "3", "4", "5"]]
   print fglTestNode
-  print fglGraph1
-  print fglDisconnected
+  --print fglGraph1
+  --print fglDisconnected
 
 myGraph :: Data.Graph.Graph
 myGraph =  Data.Graph.buildG bounds edges

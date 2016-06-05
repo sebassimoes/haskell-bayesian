@@ -37,7 +37,6 @@ instance Show FactorValue where
     where showVariablesInstantiation = unwords.map show
 
 -- handy synonyms.
-type FactorBuilder = State (Either CheckedError Factor) ()
 type FactorState a = ExceptT CheckedError (State Factor) a
 
 -- | Creates a factor value, given a instnatiation and the corresponding value.
